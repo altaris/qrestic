@@ -1,0 +1,14 @@
+<RCC>
+  <qresource prefix="main">
+    <file>icons/data_delete.png</file>
+    <file>icons/data_down.png</file>
+    <file>icons/data_find.png</file>
+    <file>icons/data_information.png</file>
+    <file>icons/data_refresh.png</file>
+    <file>icons/data_up.png</file>
+    <file>icons/data_view.png</file>
+    <file>icons/error.png</file>
+    <file>icons/folder_document.png</file>
+    <file>icons/ok.png</file>
+  </qresource>
+</RCC>

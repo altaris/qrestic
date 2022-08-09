@@ -24,6 +24,15 @@ format:
 lint:
 	pylint $(SRC_PATH)
 
+.PHONY: run
+run:
+	python3 -m $(SRC_PATH)
+
 .PHONY: typecheck
 typecheck:
 	mypy -p $(SRC_PATH)
+
+.PHONY: ui
+ui:
+	pyside6-rcc qrestic/ui/ressources.qrc -o qrestic/ui/ressources_rc.py
+	pyside6-uic --from-imports qrestic/ui/main_widget.ui -o qrestic/ui/main_widget_ui.py

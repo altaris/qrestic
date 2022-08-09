@@ -6,6 +6,11 @@ __docformat__ = "google"
 
 import logging
 import os
+import sys
+
+from PySide6.QtWidgets import QApplication
+
+from qrestic.ui import MainWidget
 
 
 def _setup_logging(logging_level: str) -> None:
@@ -39,8 +44,11 @@ def _setup_logging(logging_level: str) -> None:
 def main():
     """Entrypoint."""
     _setup_logging(os.getenv("LOGGING_LEVEL", "info"))
+    app = QApplication(sys.argv)
+    widget = MainWidget()
+    widget.show()
+    sys.exit(app.exec())
 
 
-# pylint: disable=no-value-for-parameter
 if __name__ == "__main__":
     main()
