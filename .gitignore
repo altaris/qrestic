@@ -170,6 +170,7 @@ cython_debug/
 .vscode/
 
 # Other
+test.py
 logs/
 secrets/
 test/

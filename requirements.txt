@@ -1,0 +1,2 @@
+pydantic
+pyside6
