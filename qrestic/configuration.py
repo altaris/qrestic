@@ -3,19 +3,28 @@ Configuration file utilities
 """
 __docformat__ = "google"
 
+from pathlib import Path
+
 from pydantic import BaseModel
 
 
-class ResticConfiguration(BaseModel):
+class RepositoryConfiguration(BaseModel):
     """Configuration schema for restic repository"""
 
     access_key: str
     password: str
-    repository: str
-    sectet_key: str
+    url: str
+    secret_key: str
+
+
+class ResticConfiguration(BaseModel):
+    """Configuration schema for the restic invocation"""
+
+    path: Path
 
 
 class Configuration(BaseModel):
     """Global configuration schema"""
 
+    repository: RepositoryConfiguration
     restic: ResticConfiguration

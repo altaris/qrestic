@@ -6,8 +6,8 @@ callback to the `readyRead` signal:
 ```py
 app = QCoreApplication(sys.argv)
 configuration = Configuration.parse_file(...)
-restic = Restic(configuration.restic)
-restic.readyRead.connect(callback, type=Qt.DirectConnection)
+restic = Restic(configuration)
+restic.readyRead.connect(callback)
 restic.finished.connect(app.quit)
 restic.snapshots()
 sys.exit(app.exec())
@@ -27,7 +27,7 @@ import logging
 from PySide6.QtCore import QObject, QProcess, QProcessEnvironment
 from pydantic import BaseModel
 
-from qrestic.configuration import ResticConfiguration
+from qrestic.configuration import Configuration
 from qrestic.restic.models import SnapshotsOutput
 
 
@@ -38,27 +38,30 @@ class Restic(QProcess):
 
     def __init__(
         self,
-        configuration: ResticConfiguration,
+        configuration: Configuration,
         parent: Optional[QObject] = None,
     ) -> None:
         super().__init__(parent)
+        repo_conf, restic_conf = configuration.repository, configuration.restic
         environment = QProcessEnvironment.systemEnvironment()
-        environment.insert("AWS_ACCESS_KEY_ID", configuration.access_key)
-        environment.insert("AWS_SECRET_ACCESS_KEY", configuration.sectet_key)
-        environment.insert("RESTIC_REPOSITORY", configuration.repository)
-        environment.insert("RESTIC_PASSWORD", configuration.password)
+        environment.insert("AWS_ACCESS_KEY_ID", repo_conf.access_key)
+        environment.insert("AWS_SECRET_ACCESS_KEY", repo_conf.secret_key)
+        environment.insert("RESTIC_REPOSITORY", "s3:" + repo_conf.url)
+        environment.insert("RESTIC_PASSWORD", repo_conf.password)
         self.setProcessEnvironment(environment)
         self.setProcessChannelMode(QProcess.MergedChannels)
+        self.setProgram(str(restic_conf.path))
+        self.setArguments(["--verbose=3", "--json"])
 
     def _start(
         self, command: str, additional_args: Optional[List[str]] = None
     ) -> None:
         """Initializes and starts the restic process"""
         self._command = command
-        arguments = ["--verbose=3", "--json", command]
-        if additional_args is not None:
-            arguments += additional_args
-        self.start("restic", arguments)
+        if additional_args is None:
+            additional_args = []
+        self.setArguments(self.arguments() + [command] + additional_args)
+        self.start()
 
     def get_line(self) -> Union[str, BaseModel, List[BaseModel]]:
         """Parses and returns the latest output line"""

@@ -7,6 +7,16 @@ qrestic
 
 A simple GUI for restic
 
+# Configuration file schema
+
+* `repository`
+    * `access_key`
+    * `password`
+    * `url`: Without the leading `s3:`
+    * `secret_key`
+* `restic`
+    * `path`
+
 # Contributing
 
 ## Dependencies
