@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="main">
+    <file>icons/file-text.svg</file>
+    <file>icons/cloud.svg</file>
     <file>icons/database.svg</file>
     <file>icons/download.svg</file>
     <file>icons/folder.svg</file>

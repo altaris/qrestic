@@ -26,6 +26,8 @@ class MainWidget(QWidget):
         self._ui = Ui_MainWidget()
         self._ui.setupUi(self)
         self._ui.w_operations.setEnabled(False)
+
+        # pylint: disable=no-member
         self._ui.pb_configuration_file.clicked.connect(
             self._on_pb_configuration_file_clicked
         )
@@ -83,6 +85,7 @@ class MainWidget(QWidget):
     def _on_pb_snapshots_clicked(self):
         self._ui.table_view.setModel(SnapshotsTableModel())
         self._restic = Restic(self._configuration)
+        # pylint: disable=no-member
         self._restic.readyRead.connect(self._on_restic_ready_read_snapshots)
         self._restic.finished.connect(self._on_restic_finished)
         self._restic.snapshots()
