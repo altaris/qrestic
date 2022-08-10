@@ -17,7 +17,7 @@ from qrestic.configuration import Configuration
 from qrestic.restic import Restic
 from qrestic.restic.models import ResticOutputIterator, SnapshotsOutput
 from qrestic.ui.main_widget_ui import Ui_MainWidget
-from qrestic.ui.models import SnapshotsTableModel
+from qrestic.ui.models import InitTableModel, SnapshotsTableModel
 
 
 class MainWidget(QWidget):
@@ -114,7 +114,10 @@ class MainWidget(QWidget):
 
     @Slot()
     def _on_pb_init_clicked(self):
-        pass
+        restic = self._new_restic_process(
+            InitTableModel, self._on_restic_ready_read_init
+        )
+        restic.init()
 
     @Slot()
     def _on_pb_restore_clicked(self):
@@ -155,6 +158,11 @@ class MainWidget(QWidget):
         The restic process is running the `init` command and emitted the
         `readyRead` signal.
         """
+        line = self._restic.get_line()
+        model = self._ui.table_view.model()
+        row = model.rowCount()
+        model.insertRow(row, QModelIndex())
+        model.setData(model.createIndex(row, 0), line)
 
     @Slot()
     def _on_restic_ready_read_restore(self):
@@ -176,7 +184,7 @@ class MainWidget(QWidget):
         The restic process is running the `snapshots` command and emitted the
         `readyRead` signal.
         """
-        data = self._restic.get_line()
+        data = self._restic.get_line(SnapshotsOutput)
         model = self._ui.table_view.model()
         for item in ResticOutputIterator(data, SnapshotsOutput):
             model.insertRow(0, QModelIndex())

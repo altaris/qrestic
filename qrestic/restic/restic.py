@@ -63,16 +63,18 @@ class Restic(QProcess):
         """Calls the `backup` command"""
         self._start("backup", str(path))
 
-    def get_line(self) -> Union[str, BaseModel, List[BaseModel]]:
-        """Parses and returns the latest output line"""
-        model_classes: Dict[str, Type[BaseModel]] = {
-            "snapshots": SnapshotsOutput,
-        }
+    def get_line(self, ModelClass: Optional[Type[BaseModel]] = None) -> Union[str, BaseModel, List[BaseModel]]:
+        """
+        Parses and returns the latest output line. If a parsing error occured,
+        or if `ModelClass` is left to `None`, returns the raw output string
+        instead.
+        """
         line = self.readLine().toStdString()
         if not line:
             raise RuntimeError("restic process didn't output a line")
+        if ModelClass is None:
+            return line
         try:
-            ModelClass = model_classes[self._command]
             document = json.loads(line)
             if isinstance(document, list):
                 return list(map(ModelClass.parse_obj, document))

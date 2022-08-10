@@ -14,12 +14,12 @@ from PySide6.QtCore import (
 from PySide6.QtGui import QColor
 from pydantic import BaseModel
 
-from qrestic.restic.models import SnapshotsOutput
+from qrestic.restic.models import RawOutput, SnapshotsOutput
 
 _Index = Union[QModelIndex, QPersistentModelIndex]
 
 
-def make_table_model(
+def _make_table_model(
     model_type: Type[BaseModel], fields: List[Tuple[str, str]]
 ) -> Type[QAbstractTableModel]:
     """
@@ -114,7 +114,8 @@ def make_table_model(
     return _TableModel
 
 
-SnapshotsTableModel = make_table_model(
+InitTableModel = _make_table_model(RawOutput, [("output", "Output")])
+SnapshotsTableModel = _make_table_model(
     SnapshotsOutput,
     [
         ("time", "Time"),
