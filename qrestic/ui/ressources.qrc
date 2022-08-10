@@ -1,14 +1,9 @@
 <RCC>
   <qresource prefix="main">
-    <file>icons/data_delete.png</file>
-    <file>icons/data_down.png</file>
-    <file>icons/data_find.png</file>
-    <file>icons/data_information.png</file>
-    <file>icons/data_refresh.png</file>
-    <file>icons/data_up.png</file>
-    <file>icons/data_view.png</file>
-    <file>icons/error.png</file>
-    <file>icons/folder_document.png</file>
-    <file>icons/ok.png</file>
+    <file>icons/database.svg</file>
+    <file>icons/download.svg</file>
+    <file>icons/folder.svg</file>
+    <file>icons/search.svg</file>
+    <file>icons/upload.svg</file>
   </qresource>
 </RCC>
