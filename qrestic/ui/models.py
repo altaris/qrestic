@@ -14,7 +14,7 @@ from PySide6.QtCore import (
 from PySide6.QtGui import QColor
 from pydantic import BaseModel
 
-from qrestic.restic.models import RawOutput, SnapshotsOutput
+from qrestic.restic.models import BackupOutput, RawOutput, SnapshotsOutput
 
 _Index = Union[QModelIndex, QPersistentModelIndex]
 
@@ -114,6 +114,14 @@ def _make_table_model(
     return _TableModel
 
 
+BackupTableModel = _make_table_model(
+    BackupOutput,
+    [
+        ("action", "Action"),
+        ("item", "Item"),
+        ("data_size", "Size"),
+    ],
+)
 InitTableModel = _make_table_model(RawOutput, [("output", "Output")])
 SnapshotsTableModel = _make_table_model(
     SnapshotsOutput,

@@ -22,13 +22,11 @@ __docformat__ = "google"
 
 import json
 import logging
-from pathlib import Path
-from typing import Dict, List, Optional, Type, Union
+from typing import List, Optional, Type, Union
 
 from pydantic import BaseModel
 from PySide6.QtCore import QObject, QProcess, QProcessEnvironment
 from qrestic.configuration import Configuration
-from qrestic.restic.models import SnapshotsOutput
 
 
 class Restic(QProcess):
@@ -59,11 +57,13 @@ class Restic(QProcess):
         self.setArguments(self.arguments() + [command, *args])
         self.start()
 
-    def backup(self, path: Path) -> None:
+    def backup(self, path: str) -> None:
         """Calls the `backup` command"""
-        self._start("backup", str(path))
+        self._start("backup", path)
 
-    def get_line(self, ModelClass: Optional[Type[BaseModel]] = None) -> Union[str, BaseModel, List[BaseModel]]:
+    def get_line(
+        self, ModelClass: Optional[Type[BaseModel]] = None
+    ) -> Union[str, BaseModel, List[BaseModel]]:
         """
         Parses and returns the latest output line. If a parsing error occured,
         or if `ModelClass` is left to `None`, returns the raw output string
@@ -89,9 +89,9 @@ class Restic(QProcess):
         """Calls the `init` command"""
         self._start("init")
 
-    def restore(self, snapshot_id: str, target: Path) -> None:
+    def restore(self, snapshot_id: str, target: str) -> None:
         """Calls the `restore` command"""
-        self._start("restore", snapshot_id, str(target))
+        self._start("restore", snapshot_id, target)
 
     def snapshots(self) -> None:
         """Calls the `shapshots` command"""

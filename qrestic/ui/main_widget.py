@@ -15,9 +15,17 @@ from PySide6.QtCore import (
 from PySide6.QtWidgets import QFileDialog, QHeaderView, QMessageBox, QWidget
 from qrestic.configuration import Configuration
 from qrestic.restic import Restic
-from qrestic.restic.models import ResticOutputIterator, SnapshotsOutput
+from qrestic.restic.models import (
+    BackupOutput,
+    ResticOutputIterator,
+    SnapshotsOutput,
+)
 from qrestic.ui.main_widget_ui import Ui_MainWidget
-from qrestic.ui.models import InitTableModel, SnapshotsTableModel
+from qrestic.ui.models import (
+    BackupTableModel,
+    InitTableModel,
+    SnapshotsTableModel,
+)
 
 
 class MainWidget(QWidget):
@@ -66,12 +74,16 @@ class MainWidget(QWidget):
         # pylint: disable=no-member
         self._restic.started.connect(self._on_restic_started)  # type: ignore
         self._restic.readyRead.connect(on_ready_read_slot)  # type: ignore
+        self._restic.finished.connect(on_ready_read_slot)  # type: ignore
         self._restic.finished.connect(self._on_restic_finished)  # type: ignore
         return self._restic
 
     @Slot()
     def _on_pb_backup_clicked(self):
-        pass
+        restic = self._new_restic_process(
+            BackupTableModel, self._on_restic_ready_read_backup
+        )
+        restic.backup(self._ui.le_folder.text())
 
     @Slot()
     def _on_pb_configuration_file_clicked(self):
@@ -151,6 +163,34 @@ class MainWidget(QWidget):
         The restic process is running the `backup` command and emitted the
         `readyRead` signal.
         """
+        data = self._restic.get_line(BackupOutput)
+        model = self._ui.table_view.model()
+        for item in ResticOutputIterator(data, BackupOutput):
+            assert isinstance(item, BackupOutput)
+            if item.message_type == "status":
+                self._ui.progress_bar.setValue(int(item.percent_done * 100))
+            elif item.message_type == "summary":
+                QMessageBox.information(
+                    self,
+                    "Backup complete",
+                    (
+                        "Backup complete.\n"
+                        f"New files: {item.files_new}\n"
+                        f"Modified files: {item.files_changed}\n"
+                        # f"Unmodified files: {item.files_unmodified}\n"
+                        f"Processed files: {item.total_files_processed}\n"
+                        f"Processed bytes: {item.total_bytes_processed}\n"
+                        f"New directories: {item.dirs_new}\n"
+                        f"Modified directories: {item.dirs_changed}\n"
+                        # f"Unmodified directories: {item.dirs_unmodified}\n"
+                        f"Total duration: {int(item.total_duration)} seconds"
+                    ),
+                )
+            elif item.message_type == "verbose_status":
+                model.insertRow(0, QModelIndex())
+                for i, col in enumerate(BackupTableModel.FIELDS):
+                    index = model.createIndex(0, i)
+                    model.setData(index, getattr(item, col))
 
     @Slot()
     def _on_restic_ready_read_init(self):
