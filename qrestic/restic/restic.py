@@ -106,7 +106,7 @@ class Restic(QProcess):
 
     def restore(self, snapshot_id: str, target: str) -> None:
         """Calls the `restore` command"""
-        self._start("restore", snapshot_id, target)
+        self._start("restore", snapshot_id, "--target", target)
 
     def snapshots(self) -> None:
         """Calls the `shapshots` command"""

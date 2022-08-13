@@ -146,13 +146,17 @@ class MainWidget(QWidget):
     def _on_pb_init_clicked(self):
         self._ui.tab_widget.setCurrentIndex(1)
         restic = self._new_restic_process(
-            None, self._on_restic_ready_read_init
+            None, self._on_restic_ready_read_raw
         )
         restic.init()
 
     @Slot()
     def _on_pb_restore_clicked(self):
-        self._ui.tab_widget.setCurrentIndex(0)
+        self._ui.tab_widget.setCurrentIndex(1)
+        restic = self._new_restic_process(
+            None, self._on_restic_ready_read_raw
+        )
+        restic.restore("latest", self._ui.le_folder.text())
 
     @Slot()
     def _on_pb_search_clicked(self):
@@ -218,7 +222,7 @@ class MainWidget(QWidget):
                     model.setData(index, getattr(item, col))
 
     @Slot()
-    def _on_restic_ready_read_init(self):
+    def _on_restic_ready_read_raw(self):
         """
         The restic process is running the `init` command and emitted the
         `readyRead` signal.
@@ -226,13 +230,6 @@ class MainWidget(QWidget):
         for item in self._restic.get_items():
             # item should be a string anyway
             self._append_raw_log(str(item))
-
-    @Slot()
-    def _on_restic_ready_read_restore(self):
-        """
-        The restic process is running the `restore` command and emitted the
-        `readyRead` signal.
-        """
 
     @Slot()
     def _on_restic_ready_read_search(self):

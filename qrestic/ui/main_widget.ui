@@ -164,7 +164,7 @@
            <item>
             <widget class="QPushButton" name="pb_restore">
              <property name="text">
-              <string>Restore</string>
+              <string>Restore last snapshot</string>
              </property>
              <property name="icon">
               <iconset>
@@ -297,11 +297,7 @@
        </layout>
       </item>
       <item>
-       <widget class="QProgressBar" name="progress_bar">
-        <property name="value">
-         <number>0</number>
-        </property>
-       </widget>
+       <widget class="QProgressBar" name="progress_bar"/>
       </item>
      </layout>
     </widget>
