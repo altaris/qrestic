@@ -2,7 +2,6 @@
   <qresource prefix="main">
     <file>icons/list.svg</file>
     <file>icons/align-left.svg</file>
-    <file>icons/file-text.svg</file>
     <file>icons/cloud.svg</file>
     <file>icons/database.svg</file>
     <file>icons/download.svg</file>

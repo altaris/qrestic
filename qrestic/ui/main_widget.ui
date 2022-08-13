@@ -6,9 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1063</width>
-    <height>661</height>
+    <width>1143</width>
+    <height>717</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>15</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>qrestic</string>
@@ -41,18 +46,6 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pb_configuration_file">
-          <property name="text">
-           <string>Choose configuration file</string>
-          </property>
-          <property name="icon">
-           <iconset>
-            <normalon>:/main/icons/file-text.svg</normalon>
-           </iconset>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1">
          <widget class="QLineEdit" name="le_folder">
           <property name="cursor">
@@ -63,8 +56,27 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="pb_folder">
+        <item row="0" column="2">
+         <widget class="QToolButton" name="pb_configuration_file">
+          <property name="text">
+           <string>Choose configuration file</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normalon>:/main/icons/folder.svg</normalon>
+           </iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Configuration file</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QToolButton" name="pb_folder">
           <property name="text">
            <string>Choose folder</string>
           </property>
@@ -72,6 +84,13 @@
            <iconset>
             <normalon>:/main/icons/folder.svg</normalon>
            </iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Folder</string>
           </property>
          </widget>
         </item>
@@ -108,7 +127,7 @@
          <widget class="QWidget" name="w_buttons" native="true">
           <property name="minimumSize">
            <size>
-            <width>200</width>
+            <width>100</width>
             <height>0</height>
            </size>
           </property>
@@ -132,19 +151,13 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QPushButton" name="pb_init">
-             <property name="text">
-              <string>Initialize repository</string>
+            <widget class="QToolButton" name="pb_backup">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/main/icons/cloud.svg</normalon>
-              </iconset>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pb_backup">
              <property name="text">
               <string>New backup</string>
              </property>
@@ -155,14 +168,23 @@
              </property>
              <property name="iconSize">
               <size>
-               <width>256</width>
-               <height>16</height>
+               <width>32</width>
+               <height>32</height>
               </size>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextUnderIcon</enum>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pb_restore">
+            <widget class="QToolButton" name="pb_restore">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Restore last snapshot</string>
              </property>
@@ -171,17 +193,14 @@
                <normalon>:/main/icons/download.svg</normalon>
               </iconset>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pb_snapshots">
-             <property name="text">
-              <string>Snapshots</string>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
              </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/main/icons/database.svg</normalon>
-              </iconset>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextUnderIcon</enum>
              </property>
             </widget>
            </item>
@@ -197,6 +216,60 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QToolButton" name="pb_init">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Initialize repository</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/main/icons/cloud.svg</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextUnderIcon</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="pb_snapshots">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Show snapshots</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/main/icons/database.svg</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextUnderIcon</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
