@@ -53,7 +53,6 @@ class MainWidget(QWidget):
         self._ui.pb_init.clicked.connect(self._on_pb_init_clicked)
         self._ui.pb_backup.clicked.connect(self._on_pb_backup_clicked)
         self._ui.pb_restore.clicked.connect(self._on_pb_restore_clicked)
-        self._ui.pb_search.clicked.connect(self._on_pb_search_clicked)
         self._ui.pb_snapshots.clicked.connect(self._on_pb_snapshots_clicked)
         self._ui.progress_bar.valueChanged.connect(
             self._on_progress_bar_value_changed
@@ -159,10 +158,6 @@ class MainWidget(QWidget):
         restic.restore("latest", self._ui.le_folder.text())
 
     @Slot()
-    def _on_pb_search_clicked(self):
-        self._ui.tab_widget.setCurrentIndex(0)
-
-    @Slot()
     def _on_pb_snapshots_clicked(self):
         self._ui.tab_widget.setCurrentIndex(0)
         restic = self._new_restic_process(
@@ -242,13 +237,6 @@ class MainWidget(QWidget):
         for item in self._restic.get_items():
             # item should be a string anyway
             self._append_raw_log(str(item))
-
-    @Slot()
-    def _on_restic_ready_read_search(self):
-        """
-        The restic process is running the `search` command and emitted the
-        `readyRead` signal.
-        """
 
     @Slot()
     def _on_restic_ready_read_snapshots(self):

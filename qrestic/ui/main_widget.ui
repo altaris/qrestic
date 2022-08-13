@@ -174,18 +174,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pb_search">
-             <property name="text">
-              <string>Search</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/main/icons/search.svg</normalon>
-              </iconset>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="pb_snapshots">
              <property name="text">
               <string>Snapshots</string>

@@ -7,7 +7,6 @@
     <file>icons/database.svg</file>
     <file>icons/download.svg</file>
     <file>icons/folder.svg</file>
-    <file>icons/search.svg</file>
     <file>icons/upload.svg</file>
   </qresource>
 </RCC>
