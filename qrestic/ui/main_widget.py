@@ -4,6 +4,7 @@ Main widget UI handler
 
 import logging
 from typing import Callable, Type
+import sys
 
 from pydantic import ValidationError
 from PySide6.QtCore import (
@@ -42,7 +43,6 @@ class MainWidget(QWidget):
         self._ui.table_view.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeToContents
         )
-
         # pylint: disable=no-member
         self._ui.pb_configuration_file.clicked.connect(
             self._on_pb_configuration_file_clicked
@@ -53,6 +53,13 @@ class MainWidget(QWidget):
         self._ui.pb_restore.clicked.connect(self._on_pb_restore_clicked)
         self._ui.pb_search.clicked.connect(self._on_pb_search_clicked)
         self._ui.pb_snapshots.clicked.connect(self._on_pb_snapshots_clicked)
+        try:
+            self._ui.le_configuration_file.setText(sys.argv[1])
+            self._configuration = Configuration.parse_file(sys.argv[1])
+            self._ui.le_folder.setText(sys.argv[2])
+            self._enable_operation_widgets()
+        except (IndexError, ValidationError):
+            pass
 
     def _append_raw_log(self, text: str):
         """Appends text to `_ui.te_raw`"""

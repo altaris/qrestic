@@ -26,7 +26,7 @@ lint:
 
 .PHONY: run
 run:
-	python3 -m $(SRC_PATH)
+	python3 -m $(SRC_PATH) secrets/conf.json test/
 
 .PHONY: typecheck
 typecheck:

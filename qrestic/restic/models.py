@@ -5,7 +5,7 @@ __docformat__ = "google"
 
 import logging
 from datetime import datetime
-from typing import Iterator, List, Optional, Type, Union
+from typing import Iterable, Iterator, List, Optional, Type, Union
 
 from pydantic import BaseModel, Extra
 
@@ -65,7 +65,9 @@ class ResticOutputIterator:
     _ModelClass: Type[BaseModel]
 
     def __init__(
-        self, data: List[Union[str, BaseModel]], ModelClass: Type[BaseModel]
+        self,
+        data: Iterable[Union[str, BaseModel]],
+        ModelClass: Type[BaseModel],
     ) -> None:
         self._iterator = iter(data)
         self._ModelClass = ModelClass
