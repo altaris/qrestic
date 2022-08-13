@@ -49,23 +49,25 @@ class BackupOutput(BaseModel, extra=Extra.ignore):
 
 class ResticOutputIterator:
     """
-    Iterates over a list of items that are either strings or `BaseModel`. If an
-    item is not of type `_ModelClass`, an error is logged and the item is
-    skipped.
+    Abstracts iterating over the outputs of restic. Simply use as
+
+    ```py
+    items = restic.get_items(ModelClass)  # See qrestic.restic.models
+    for item in ResticOutputIterator(items, ModelClass):
+        # This is already guaranteed, but can be convenient for typecheckings
+        # and autocompletions
+        assert isinstance(item, ModelClass)
+        ...
+    ```
     """
 
     _iterator: Iterator[Union[str, BaseModel]]
     _ModelClass: Type[BaseModel]
 
     def __init__(
-        self,
-        data: Union[str, BaseModel, List[BaseModel]],
-        ModelClass: Type[BaseModel],
+        self, data: List[Union[str, BaseModel]], ModelClass: Type[BaseModel]
     ) -> None:
-        if not isinstance(data, list):
-            self._iterator = iter([data])
-        else:
-            self._iterator = iter(data)
+        self._iterator = iter(data)
         self._ModelClass = ModelClass
 
     def __iter__(self):

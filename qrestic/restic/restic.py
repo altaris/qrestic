@@ -13,19 +13,24 @@ restic.snapshots()
 sys.exit(app.exec())
 ```
 
-In the callback (which should have access to the `restic` variable), you
-can access the latest output line using `get_line`. This method returns
-either a string or an output line model (or a list thereof), see
+In the callback (which should have access to the `restic` variable), you can
+access the latest output items (parsed lines) using `get_items`. This method
+returns a list of either a string or an output line model, see
 `qrestic.restic.models`.
 """
 __docformat__ = "google"
 
 import json
 import logging
-from typing import List, Optional, Type, Union
+from typing import List, Optional, Sequence, Type, Union
 
 from pydantic import BaseModel
-from PySide6.QtCore import QObject, QProcess, QProcessEnvironment
+from PySide6.QtCore import (
+    QIODeviceBase,
+    QObject,
+    QProcess,
+    QProcessEnvironment,
+)
 from qrestic.configuration import Configuration
 
 
@@ -55,35 +60,45 @@ class Restic(QProcess):
         """Initializes and starts the restic process"""
         self._command = command
         self.setArguments(self.arguments() + [command, *args])
-        self.start()
+        self.start(QIODeviceBase.OpenModeFlag.ReadOnly)
 
     def backup(self, path: str) -> None:
         """Calls the `backup` command"""
         self._start("backup", path)
 
-    def get_line(
+    def get_items(
         self, ModelClass: Optional[Type[BaseModel]] = None
-    ) -> Union[str, BaseModel, List[BaseModel]]:
+    ) -> Sequence[Union[str, BaseModel]]:
         """
-        Parses and returns the latest output line. If a parsing error occured,
-        or if `ModelClass` is left to `None`, returns the raw output string
-        instead.
+        Parses and returns the latest output lines as a list of either strings
+        or `ModelClass`. Each line is parsed to fit in a `ModelClass`. If the
+        parsing is unsuccessful, or if `ModelClass` is left to `None`, the line
+        is left as is. If no line was read form the process, an empty list is
+        returned.
+
+        The `Sequence` return type is used for covariance.
         """
-        line = self.readLine().toStdString()
-        if not line:
-            raise RuntimeError("restic process didn't output a line")
+        lines: Sequence[str] = self.readAll().toStdString().split("\n")
+        if not lines:
+            logging.error("restic process didn't output a line")
+            return []
         if ModelClass is None:
-            return line
-        try:
-            document = json.loads(line)
-            if isinstance(document, list):
-                return list(map(ModelClass.parse_obj, document))
-            return ModelClass.parse_obj(document)
-        except Exception as e:  # pylint: disable=broad-except
-            logging.debug(
-                "Parsing error for command '%s': '%s'", self._command, e
-            )
-            return line
+            return lines
+        items: List[Union[str, BaseModel]] = []
+        for line in lines:
+            try:
+                document = json.loads(line)
+                if isinstance(document, list):
+                    items += list(map(ModelClass.parse_obj, document))
+                else:
+                    items.append(ModelClass.parse_obj(document))
+            except Exception as e:  # pylint: disable=broad-except
+                logging.debug(
+                    "Parsing error for command '%s': '%s'", self._command, e
+                )
+                if line:
+                    items.append(line)
+        return items
 
     def init(self) -> None:
         """Calls the `init` command"""

@@ -63,7 +63,6 @@ class MainWidget(QWidget):
         else:
             self._ui.te_raw.append("\n" + text)
 
-
     def _enable_operation_widgets(self):
         """Enables the `tab_widget` if all the conditions are met"""
         if self._ui.le_configuration_file.text() and self._ui.le_folder.text():
@@ -179,9 +178,9 @@ class MainWidget(QWidget):
         The restic process is running the `backup` command and emitted the
         `readyRead` signal.
         """
-        data = self._restic.get_line(BackupOutput)
+        items = self._restic.get_items(BackupOutput)
         model = self._ui.table_view.model()
-        for item in ResticOutputIterator(data, BackupOutput):
+        for item in ResticOutputIterator(items, BackupOutput):
             assert isinstance(item, BackupOutput)
             if item.message_type == "status":
                 self._ui.progress_bar.setValue(int(item.percent_done * 100))
@@ -214,11 +213,9 @@ class MainWidget(QWidget):
         The restic process is running the `init` command and emitted the
         `readyRead` signal.
         """
-        try:
-            line = self._restic.get_line()
-        except RuntimeError:
-            return
-        self._append_raw_log(str(line))
+        for item in self._restic.get_items():
+            # item should be a string anyway
+            self._append_raw_log(str(item))
 
     @Slot()
     def _on_restic_ready_read_restore(self):
@@ -240,9 +237,9 @@ class MainWidget(QWidget):
         The restic process is running the `snapshots` command and emitted the
         `readyRead` signal.
         """
-        data = self._restic.get_line(SnapshotsOutput)
+        items = self._restic.get_items(SnapshotsOutput)
         model = self._ui.table_view.model()
-        for item in ResticOutputIterator(data, SnapshotsOutput):
+        for item in ResticOutputIterator(items, SnapshotsOutput):
             model.insertRow(0, QModelIndex())
             for i, col in enumerate(SnapshotsTableModel.FIELDS):
                 index = model.createIndex(0, i)
