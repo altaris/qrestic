@@ -228,7 +228,7 @@
           <widget class="QWidget" name="tab_raw">
            <attribute name="icon">
             <iconset>
-             <normalon>:/main/icons/eye.svg</normalon>
+             <normalon>:/main/icons/align-left.svg</normalon>
             </iconset>
            </attribute>
            <attribute name="title">
