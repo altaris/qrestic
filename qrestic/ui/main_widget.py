@@ -14,6 +14,7 @@ from PySide6.QtCore import (
     Slot,
 )
 from PySide6.QtWidgets import QFileDialog, QHeaderView, QMessageBox, QWidget
+from PySide6.QtGui import QCursor
 from qrestic.configuration import Configuration
 from qrestic.restic import Restic
 from qrestic.restic.models import (
@@ -168,14 +169,16 @@ class MainWidget(QWidget):
     @Slot()
     def _on_restic_finished(self):
         """The restic process has finished"""
+        self.setCursor(QCursor(Qt.ArrowCursor))
         self._ui.w_buttons.setEnabled(True)
+        self._ui.w_conf.setEnabled(True)
         self._ui.progress_bar.setValue(100)
-        while line := self._restic.readLine():
-            print(line)
 
     @Slot()
     def _on_restic_started(self):
+        self.setCursor(QCursor(Qt.BusyCursor))
         self._ui.w_buttons.setEnabled(False)
+        self._ui.w_conf.setEnabled(False)
         self._ui.progress_bar.setValue(0)
         self._ui.te_raw.setText("")
 

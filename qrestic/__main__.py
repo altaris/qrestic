@@ -8,7 +8,7 @@ import logging
 import os
 import sys
 
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QStyleFactory
 
 from qrestic.ui import MainWidget
 
@@ -45,6 +45,10 @@ def main():
     """Entrypoint."""
     _setup_logging(os.getenv("LOGGING_LEVEL", "info"))
     app = QApplication(sys.argv)
+    app.setApplicationName("qrestic")
+    app.setApplicationVersion("1.0")
+    if "Fusion" in QStyleFactory.keys():
+        app.setStyle(QStyleFactory.create("Fusion"))
     widget = MainWidget()
     widget.show()
     sys.exit(app.exec())
