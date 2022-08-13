@@ -44,6 +44,7 @@ class MainWidget(QWidget):
         self._ui.table_view.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeToContents
         )
+        self._ui.progress_bar_busy.setVisible(False)
         # pylint: disable=no-member
         self._ui.pb_configuration_file.clicked.connect(
             self._on_pb_configuration_file_clicked
@@ -54,6 +55,9 @@ class MainWidget(QWidget):
         self._ui.pb_restore.clicked.connect(self._on_pb_restore_clicked)
         self._ui.pb_search.clicked.connect(self._on_pb_search_clicked)
         self._ui.pb_snapshots.clicked.connect(self._on_pb_snapshots_clicked)
+        self._ui.progress_bar.valueChanged.connect(
+            self._on_progress_bar_value_changed
+        )
         try:
             self._ui.le_configuration_file.setText(sys.argv[1])
             self._configuration = Configuration.parse_file(sys.argv[1])
@@ -145,17 +149,13 @@ class MainWidget(QWidget):
     @Slot()
     def _on_pb_init_clicked(self):
         self._ui.tab_widget.setCurrentIndex(1)
-        restic = self._new_restic_process(
-            None, self._on_restic_ready_read_raw
-        )
+        restic = self._new_restic_process(None, self._on_restic_ready_read_raw)
         restic.init()
 
     @Slot()
     def _on_pb_restore_clicked(self):
         self._ui.tab_widget.setCurrentIndex(1)
-        restic = self._new_restic_process(
-            None, self._on_restic_ready_read_raw
-        )
+        restic = self._new_restic_process(None, self._on_restic_ready_read_raw)
         restic.restore("latest", self._ui.le_folder.text())
 
     @Slot()
@@ -171,11 +171,21 @@ class MainWidget(QWidget):
         restic.snapshots()
 
     @Slot()
+    def _on_progress_bar_value_changed(self):
+        """
+        When the progress bar value changes, hide `_ui.progress_bar_bury`, and
+        make `_ui.progress_bar` visible.
+        """
+        self._ui.progress_bar.setVisible(True)
+        self._ui.progress_bar_busy.setVisible(False)
+
+    @Slot()
     def _on_restic_finished(self):
         """The restic process has finished"""
         self.setCursor(QCursor(Qt.ArrowCursor))
         self._ui.w_buttons.setEnabled(True)
         self._ui.w_conf.setEnabled(True)
+        # This automatically hides the busy progress bar
         self._ui.progress_bar.setValue(100)
 
     @Slot()
@@ -184,6 +194,8 @@ class MainWidget(QWidget):
         self._ui.w_buttons.setEnabled(False)
         self._ui.w_conf.setEnabled(False)
         self._ui.progress_bar.setValue(0)
+        self._ui.progress_bar.setVisible(False)
+        self._ui.progress_bar_busy.setVisible(True)
         self._ui.te_raw.setText("")
 
     @Slot()
