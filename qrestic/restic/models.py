@@ -86,12 +86,6 @@ class ResticOutputIterator:
                 )
 
 
-class RawOutput(BaseModel):
-    """Phony output line model"""
-
-    output: str = ""
-
-
 class SnapshotsOutput(BaseModel, extra=Extra.ignore):
     """Output line model for command `snapshots`"""
 

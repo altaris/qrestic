@@ -21,11 +21,10 @@ from qrestic.restic.models import (
     SnapshotsOutput,
 )
 from qrestic.ui.main_widget_ui import Ui_MainWidget
-from qrestic.ui.models import (
-    BackupTableModel,
-    InitTableModel,
-    SnapshotsTableModel,
-)
+
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+from qrestic.ui.models import *
 
 
 class MainWidget(QWidget):
@@ -55,31 +54,43 @@ class MainWidget(QWidget):
         self._ui.pb_search.clicked.connect(self._on_pb_search_clicked)
         self._ui.pb_snapshots.clicked.connect(self._on_pb_snapshots_clicked)
 
-    def _enable_operations(self):
+    def _append_raw_log(self, text: str):
+        """Appends text to `_ui.te_raw`"""
+        if not text:
+            return
+        if not self._ui.te_raw.toPlainText():
+            self._ui.te_raw.append(text)
+        else:
+            self._ui.te_raw.append("\n" + text)
+
+
+    def _enable_operation_widgets(self):
         """Enables the `tab_widget` if all the conditions are met"""
         if self._ui.le_configuration_file.text() and self._ui.le_folder.text():
             self._ui.w_operations.setEnabled(True)
 
     def _new_restic_process(
         self,
-        TableModelClass: Type[QAbstractTableModel],
+        TableModelClass: Optional[Type[QAbstractTableModel]],
         on_ready_read_slot: Callable,
     ) -> Restic:
         """
         Sets `_restic` to a new restic process handler and connect it to the
         relevant slots. Also reinitializes the table model.
         """
-        self._ui.table_view.setModel(TableModelClass())
+        self._ui.table_view.setModel(
+            None if TableModelClass is None else TableModelClass()
+        )
         self._restic = Restic(self._configuration)
         # pylint: disable=no-member
         self._restic.started.connect(self._on_restic_started)  # type: ignore
         self._restic.readyRead.connect(on_ready_read_slot)  # type: ignore
-        self._restic.finished.connect(on_ready_read_slot)  # type: ignore
         self._restic.finished.connect(self._on_restic_finished)  # type: ignore
         return self._restic
 
     @Slot()
     def _on_pb_backup_clicked(self):
+        self._ui.tab_widget.setCurrentIndex(0)
         restic = self._new_restic_process(
             BackupTableModel, self._on_restic_ready_read_backup
         )
@@ -108,7 +119,7 @@ class MainWidget(QWidget):
             )
             return
         self._ui.le_configuration_file.setText(path)
-        self._enable_operations()
+        self._enable_operation_widgets()
 
     @Slot()
     def _on_pb_folder_clicked(self):
@@ -122,25 +133,27 @@ class MainWidget(QWidget):
         if not path:
             return
         self._ui.le_folder.setText(path)
-        self._enable_operations()
+        self._enable_operation_widgets()
 
     @Slot()
     def _on_pb_init_clicked(self):
+        self._ui.tab_widget.setCurrentIndex(1)
         restic = self._new_restic_process(
-            InitTableModel, self._on_restic_ready_read_init
+            None, self._on_restic_ready_read_init
         )
         restic.init()
 
     @Slot()
     def _on_pb_restore_clicked(self):
-        pass
+        self._ui.tab_widget.setCurrentIndex(0)
 
     @Slot()
     def _on_pb_search_clicked(self):
-        pass
+        self._ui.tab_widget.setCurrentIndex(0)
 
     @Slot()
     def _on_pb_snapshots_clicked(self):
+        self._ui.tab_widget.setCurrentIndex(0)
         restic = self._new_restic_process(
             SnapshotsTableModel, self._on_restic_ready_read_snapshots
         )
@@ -151,11 +164,14 @@ class MainWidget(QWidget):
         """The restic process has finished"""
         self._ui.w_buttons.setEnabled(True)
         self._ui.progress_bar.setValue(100)
+        while line := self._restic.readLine():
+            print(line)
 
     @Slot()
     def _on_restic_started(self):
         self._ui.w_buttons.setEnabled(False)
         self._ui.progress_bar.setValue(0)
+        self._ui.te_raw.setText("")
 
     @Slot()
     def _on_restic_ready_read_backup(self):
@@ -198,11 +214,11 @@ class MainWidget(QWidget):
         The restic process is running the `init` command and emitted the
         `readyRead` signal.
         """
-        line = self._restic.get_line()
-        model = self._ui.table_view.model()
-        row = model.rowCount()
-        model.insertRow(row, QModelIndex())
-        model.setData(model.createIndex(row, 0), line)
+        try:
+            line = self._restic.get_line()
+        except RuntimeError:
+            return
+        self._append_raw_log(str(line))
 
     @Slot()
     def _on_restic_ready_read_restore(self):

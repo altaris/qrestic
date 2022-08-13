@@ -14,7 +14,9 @@ from PySide6.QtCore import (
 from PySide6.QtGui import QColor
 from pydantic import BaseModel
 
-from qrestic.restic.models import BackupOutput, RawOutput, SnapshotsOutput
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+from qrestic.restic.models import *
 
 _Index = Union[QModelIndex, QPersistentModelIndex]
 
@@ -122,7 +124,6 @@ BackupTableModel = _make_table_model(
         ("data_size", "Size"),
     ],
 )
-InitTableModel = _make_table_model(RawOutput, [("output", "Output")])
 SnapshotsTableModel = _make_table_model(
     SnapshotsOutput,
     [
