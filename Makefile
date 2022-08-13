@@ -24,6 +24,13 @@ format:
 lint:
 	pylint $(SRC_PATH)
 
+.PHONY: qt
+qt:
+	pyside6-rcc qrestic/ui/ressources.qrc -o qrestic/ui/ressources_rc.py
+	pyside6-uic --from-imports qrestic/ui/main_widget.ui -o qrestic/ui/main_widget_ui.py
+	pyside6-lupdate qrestic/**/*.py qrestic/**/*.ui -ts qrestic/translations.ts
+	pyside6-lrelease qrestic/translations/translations.ts -qm qrestic/translations/translations_fr.qm
+
 .PHONY: run
 run:
 	python3 -m $(SRC_PATH) secrets/conf.json test/
@@ -31,8 +38,3 @@ run:
 .PHONY: typecheck
 typecheck:
 	mypy -p $(SRC_PATH)
-
-.PHONY: ui
-ui:
-	pyside6-rcc qrestic/ui/ressources.qrc -o qrestic/ui/ressources_rc.py
-	pyside6-uic --from-imports qrestic/ui/main_widget.ui -o qrestic/ui/main_widget_ui.py

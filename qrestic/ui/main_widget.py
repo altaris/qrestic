@@ -135,7 +135,7 @@ class MainWidget(QWidget):
     def _on_pb_folder_clicked(self):
         path = QFileDialog.getExistingDirectory(
             self,
-            "Open folder",
+            self.tr("Open folder"),
             QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[
                 0
             ],
@@ -206,20 +206,34 @@ class MainWidget(QWidget):
             if item.message_type == "status":
                 self._ui.progress_bar.setValue(int(item.percent_done * 100))
             elif item.message_type == "summary":
+                tr = self.tr
                 QMessageBox.information(
                     self,
-                    "Backup complete",
+                    tr("Backup complete"),
                     (
-                        "Backup complete.\n"
-                        f"New files: {item.files_new}\n"
-                        f"Modified files: {item.files_changed}\n"
-                        # f"Unmodified files: {item.files_unmodified}\n"
-                        f"Processed files: {item.total_files_processed}\n"
-                        f"Processed bytes: {item.total_bytes_processed}\n"
-                        f"New directories: {item.dirs_new}\n"
-                        f"Modified directories: {item.dirs_changed}\n"
-                        # f"Unmodified directories: {item.dirs_unmodified}\n"
-                        f"Total duration: {int(item.total_duration)} seconds"
+                        tr("Backup complete.")
+                        + "\n"
+                        + tr("New files: ")
+                        + str(item.files_new)
+                        + "\n"
+                        + tr("Modified files: ")
+                        + str(item.files_changed)
+                        + "\n"
+                        + tr("Processed files: ")
+                        + str(item.total_files_processed)
+                        + "\n"
+                        + tr("Processed bytes: ")
+                        + str(item.total_bytes_processed)
+                        + "\n"
+                        + tr("New directories: ")
+                        + str(item.dirs_new)
+                        + "\n"
+                        + tr("Modified directories: ")
+                        + str(item.dirs_changed)
+                        + "\n"
+                        + tr("Total duration: ")
+                        + str(int(item.total_duration))
+                        + tr(" seconds")
                     ),
                 )
             elif item.message_type == "verbose_status":

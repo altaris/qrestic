@@ -8,6 +8,7 @@ import logging
 import os
 import sys
 
+from PySide6.QtCore import QTranslator
 from PySide6.QtWidgets import QApplication, QStyleFactory
 
 from qrestic.ui import MainWidget
@@ -49,6 +50,10 @@ def main():
     app.setApplicationVersion("1.0")
     if "Fusion" in QStyleFactory.keys():
         app.setStyle(QStyleFactory.create("Fusion"))
+    translator = QTranslator(app)
+    if translator.load("qrestic/translations/translations_fr.qm"):
+        app.installTranslator(translator)
+        logging.info("Installed franch translation")
     widget = MainWidget()
     widget.show()
     sys.exit(app.exec())
