@@ -6,6 +6,10 @@ VENV			= ./venv
 
 all: format typecheck lint
 
+.PHONY: build
+build:
+	cxfreeze --target-dir build/qrestic qrestic.py
+
 .PHONY: docs
 docs:
 	-@mkdir $(DOCS_PATH) > /dev/null 2>&1
@@ -18,7 +22,7 @@ docs-browser:
 
 .PHONY: format
 format:
-	black --line-length 79 --target-version py310 $(SRC_PATH) qrestic.spec
+	black --line-length 79 --target-version py310 $(SRC_PATH)
 
 .PHONY: lint
 lint:
@@ -31,7 +35,7 @@ qt:
 	pyside6-uic --from-imports $(SRC_PATH)/ui/main_widget.ui \
 		-o $(SRC_PATH)/ui/main_widget_ui.py
 	pyside6-lupdate $(SRC_PATH)/**/*.py $(SRC_PATH)/**/*.ui \
-		-ts $(SRC_PATH)/translations.ts
+		-ts $(SRC_PATH)/translations/translations.ts
 	pyside6-lrelease $(SRC_PATH)/translations/translations.ts \
 		-qm $(SRC_PATH)/translations/translations_fr.qm
 
