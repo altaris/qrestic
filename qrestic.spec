@@ -1,4 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
+import sys
+sys.setrecursionlimit(5000)
+
 from PyInstaller.utils.hooks import collect_all
 
 datas = [("qrestic/ui/icons/*.svg", "qrestic/translations/*.qm")]
