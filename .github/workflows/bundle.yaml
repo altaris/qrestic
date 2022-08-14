@@ -1,0 +1,41 @@
+name: Bundle application
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+
+  bundle:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Run Qt compilers
+      run: make qt
+
+    - name: Bundle for windows
+      uses: JackMcKew/pyinstaller-action-windows@main
+      with:
+        path: ./
+        spec: qrestic.spec
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: qrestic
+        path: dist/windows

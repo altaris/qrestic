@@ -18,7 +18,7 @@ docs-browser:
 
 .PHONY: format
 format:
-	black --line-length 79 --target-version py310 $(SRC_PATH)
+	black --line-length 79 --target-version py310 $(SRC_PATH) qrestic.spec
 
 .PHONY: lint
 lint:
@@ -26,10 +26,14 @@ lint:
 
 .PHONY: qt
 qt:
-	pyside6-rcc qrestic/ui/ressources.qrc -o qrestic/ui/ressources_rc.py
-	pyside6-uic --from-imports qrestic/ui/main_widget.ui -o qrestic/ui/main_widget_ui.py
-	pyside6-lupdate qrestic/**/*.py qrestic/**/*.ui -ts qrestic/translations.ts
-	pyside6-lrelease qrestic/translations/translations.ts -qm qrestic/translations/translations_fr.qm
+	pyside6-rcc $(SRC_PATH)/ui/ressources.qrc \
+		-o $(SRC_PATH)/ui/ressources_rc.py
+	pyside6-uic --from-imports $(SRC_PATH)/ui/main_widget.ui \
+		-o $(SRC_PATH)/ui/main_widget_ui.py
+	pyside6-lupdate $(SRC_PATH)/**/*.py $(SRC_PATH)/**/*.ui \
+		-ts $(SRC_PATH)/translations.ts
+	pyside6-lrelease $(SRC_PATH)/translations/translations.ts \
+		-qm $(SRC_PATH)/translations/translations_fr.qm
 
 .PHONY: run
 run:
