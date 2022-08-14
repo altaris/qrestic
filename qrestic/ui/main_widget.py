@@ -69,6 +69,7 @@ class MainWidget(QWidget):
         """Appends text to `_ui.te_raw`"""
         if not text:
             return
+        logging.debug("%s", text)
         if not self._ui.te_raw.toPlainText():
             self._ui.te_raw.append(text)
         else:
@@ -118,16 +119,19 @@ class MainWidget(QWidget):
         )
         if not path:
             return
-        logging.debug("Loading configuration file '%s'", path)
         try:
             self._configuration = Configuration.parse_file(path)
-        except ValidationError:
+        except ValidationError as e:
+            logging.error("Invalid configuration file: %s", e)
             QMessageBox.critical(
                 self,
                 "Configuration error",
                 f"File '{path}' is not a valid configuration file",
             )
             return
+        logging.info(
+            "Loaded configuration file '%s': %s", path, self._configuration
+        )
         self._ui.le_configuration_file.setText(path)
         self._enable_operation_widgets()
 
@@ -144,6 +148,7 @@ class MainWidget(QWidget):
             return
         self._ui.le_folder.setText(path)
         self._enable_operation_widgets()
+        logging.info("Selected folder %s", path)
 
     @Slot()
     def _on_pb_init_clicked(self):
@@ -206,6 +211,17 @@ class MainWidget(QWidget):
             if item.message_type == "status":
                 self._ui.progress_bar.setValue(int(item.percent_done * 100))
             elif item.message_type == "summary":
+                logging.info(
+                    (
+                        "Backup complete. New %d, changed %d, processed %d "
+                        "(%d bytes), duration %d"
+                    ),
+                    item.files_new,
+                    item.files_changed,
+                    item.total_files_processed,
+                    item.total_bytes_processed,
+                    item.total_duration,
+                )
                 tr = self.tr
                 QMessageBox.information(
                     self,

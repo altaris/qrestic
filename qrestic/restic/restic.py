@@ -48,18 +48,26 @@ class Restic(QProcess):
         repo_conf, restic_conf = configuration.repository, configuration.restic
         environment = QProcessEnvironment.systemEnvironment()
         environment.insert("AWS_ACCESS_KEY_ID", repo_conf.access_key)
-        environment.insert("AWS_SECRET_ACCESS_KEY", repo_conf.secret_key)
+        environment.insert(
+            "AWS_SECRET_ACCESS_KEY", repo_conf.secret_key.get_secret_value()
+        )
         environment.insert("RESTIC_REPOSITORY", "s3:" + repo_conf.url)
-        environment.insert("RESTIC_PASSWORD", repo_conf.password)
+        environment.insert(
+            "RESTIC_PASSWORD", repo_conf.password.get_secret_value()
+        )
         self.setProcessEnvironment(environment)
         self.setProcessChannelMode(QProcess.MergedChannels)
         self.setProgram(str(restic_conf.path))
         self.setArguments(["--verbose=3", "--json"])
 
+    def __str__(self) -> str:
+        return f"Restic ({self._command})"
+
     def _start(self, command: str, *args) -> None:
         """Initializes and starts the restic process"""
         self._command = command
         self.setArguments(self.arguments() + [command, *args])
+        logging.info("%s: starting with arguments %s", self, args)
         self.start(QIODeviceBase.OpenModeFlag.ReadOnly)
 
     def backup(self, path: str) -> None:
@@ -79,25 +87,31 @@ class Restic(QProcess):
         The `Sequence` return type is used for covariance.
         """
         lines: Sequence[str] = self.readAll().toStdString().split("\n")
+        lines = [x for x in lines if x]
         if not lines:
-            logging.error("restic process didn't output a line")
+            logging.warning(
+                "%s get_item: process didn't output any line", self
+            )
             return []
-        if ModelClass is None:
-            return lines
         items: List[Union[str, BaseModel]] = []
-        for line in lines:
-            try:
-                document = json.loads(line)
-                if isinstance(document, list):
-                    items += list(map(ModelClass.parse_obj, document))
-                else:
-                    items.append(ModelClass.parse_obj(document))
-            except Exception as e:  # pylint: disable=broad-except
-                logging.debug(
-                    "Parsing error for command '%s': '%s'", self._command, e
-                )
-                if line:
-                    items.append(line)
+        if ModelClass is None:
+            items = lines  # type: ignore
+        else:
+            for line in lines:
+                try:
+                    document = json.loads(line)
+                    if isinstance(document, list):
+                        items += list(map(ModelClass.parse_obj, document))
+                    else:
+                        items.append(ModelClass.parse_obj(document))
+                except Exception as e:  # pylint: disable=broad-except
+                    logging.debug(
+                        "%s get_item: output parsing error: %s", self, e
+                    )
+                    if line:
+                        items.append(line)
+        for item in items:
+            logging.debug("%s get_item: %s", self, item)
         return items
 
     def init(self) -> None:

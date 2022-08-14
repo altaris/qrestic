@@ -79,12 +79,14 @@ class ResticOutputIterator:
         while True:
             item = next(self._iterator)
             if isinstance(item, self._ModelClass):
+                # Already logged in `Restic.get_item`
+                # logging.debug("%s", item)
                 return item
             if isinstance(item, str) and item.startswith("Fatal: "):
                 logging.error("Restic error: %s", item[7:])
             else:
                 logging.error(
-                    "Error: invalid item of type %s :%s",
+                    "Error: invalid output item of type '%s': %s",
                     item.__class__.__name__,
                     str(item),
                 )
