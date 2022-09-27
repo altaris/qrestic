@@ -41,7 +41,7 @@ qt:
 
 .PHONY: run
 run:
-	python3 -m $(SRC_PATH) secrets/conf.json test/
+	python3 qrestic.py
 
 .PHONY: typecheck
 typecheck:

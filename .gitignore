@@ -164,7 +164,8 @@ cython_debug/
 .vscode/
 
 # Other
-test.py
+conf.json
 logs/
 secrets/
+test.py
 test/

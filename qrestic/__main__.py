@@ -8,6 +8,7 @@ import logging
 import logging.handlers
 import os
 import sys
+from pathlib import Path
 
 from PySide6.QtCore import QTranslator
 from PySide6.QtWidgets import QApplication, QStyleFactory
@@ -65,6 +66,9 @@ def main():
         logging.info("Installed french translation")
     widget = MainWidget()
     widget.show()
+    DEFAULT_CONFIGURATION_FILE_PATH = Path(os.getcwd()) / "conf.json"
+    if os.path.exists(DEFAULT_CONFIGURATION_FILE_PATH):
+        widget.load_configuration(DEFAULT_CONFIGURATION_FILE_PATH)
     status = app.exec()
     logging.info("Exiting with status %d", status)
     sys.exit(status)

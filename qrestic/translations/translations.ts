@@ -4,52 +4,52 @@
 <context>
     <name></name>
     <message>
-        <location filename="../ui/main_widget.py" line="228"/>
+        <location filename="../ui/main_widget.py" line="221"/>
         <source>Backup complete</source>
         <translation>Backup terminé</translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="231"/>
+        <location filename="../ui/main_widget.py" line="224"/>
         <source>Backup complete.</source>
         <translation>Backup terminé.</translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="233"/>
+        <location filename="../ui/main_widget.py" line="226"/>
         <source>New files: </source>
         <translation>Nouveaux fichiers : </translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="236"/>
+        <location filename="../ui/main_widget.py" line="229"/>
         <source>Modified files: </source>
         <translation>Fichiers modifiés : </translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="239"/>
+        <location filename="../ui/main_widget.py" line="232"/>
         <source>Processed files: </source>
         <translation>Fichiers traités : </translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="242"/>
+        <location filename="../ui/main_widget.py" line="235"/>
         <source>Processed bytes: </source>
         <translation>Octets traités : </translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="245"/>
+        <location filename="../ui/main_widget.py" line="238"/>
         <source>New directories: </source>
         <translation>Nouveaux dossiers : </translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="248"/>
+        <location filename="../ui/main_widget.py" line="241"/>
         <source>Modified directories: </source>
         <translation>Dossiers modifiés : </translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="251"/>
+        <location filename="../ui/main_widget.py" line="244"/>
         <source>Total duration: </source>
         <translation type="unfinished">Fichier de configuration</translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="253"/>
+        <location filename="../ui/main_widget.py" line="246"/>
         <source> seconds</source>
         <translation> secondes</translation>
     </message>
@@ -117,7 +117,7 @@
         <translation>Les logs apparaîtront ici</translation>
     </message>
     <message>
-        <location filename="../ui/main_widget.py" line="142"/>
+        <location filename="../ui/main_widget.py" line="138"/>
         <source>Open folder</source>
         <translation>Ouvrir un dossier</translation>
     </message>

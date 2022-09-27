@@ -3,8 +3,8 @@ Main widget UI handler
 """
 
 import logging
-from typing import Callable, Type
-import sys
+from pathlib import Path
+from typing import Callable, Type, Union
 
 from pydantic import ValidationError
 from PySide6.QtCore import (
@@ -13,8 +13,8 @@ from PySide6.QtCore import (
     QStandardPaths,
     Slot,
 )
-from PySide6.QtWidgets import QFileDialog, QHeaderView, QMessageBox, QWidget
 from PySide6.QtGui import QCursor
+from PySide6.QtWidgets import QFileDialog, QHeaderView, QMessageBox, QWidget
 from qrestic.configuration import Configuration
 from qrestic.restic import Restic
 from qrestic.restic.models import (
@@ -57,13 +57,6 @@ class MainWidget(QWidget):
         self._ui.progress_bar.valueChanged.connect(
             self._on_progress_bar_value_changed
         )
-        try:
-            self._ui.le_configuration_file.setText(sys.argv[1])
-            self._configuration = Configuration.parse_file(sys.argv[1])
-            self._ui.le_folder.setText(sys.argv[2])
-            self._enable_operation_widgets()
-        except (IndexError, ValidationError):
-            pass
 
     def _append_raw_log(self, text: str):
         """Appends text to `_ui.te_raw`"""
@@ -120,7 +113,7 @@ class MainWidget(QWidget):
         if not path:
             return
         try:
-            self._configuration = Configuration.parse_file(path)
+            self.load_configuration(path)
         except ValidationError as e:
             logging.error("Invalid configuration file: %s", e)
             QMessageBox.critical(
@@ -129,11 +122,6 @@ class MainWidget(QWidget):
                 f"File '{path}' is not a valid configuration file",
             )
             return
-        logging.info(
-            "Loaded configuration file '%s': %s", path, self._configuration
-        )
-        self._ui.le_configuration_file.setText(path)
-        self._enable_operation_widgets()
 
     @Slot()
     def _on_pb_folder_clicked(self):
@@ -146,9 +134,6 @@ class MainWidget(QWidget):
         )
         if not path:
             return
-        self._ui.le_folder.setText(path)
-        self._enable_operation_widgets()
-        logging.info("Selected folder %s", path)
 
     @Slot()
     def _on_pb_init_clicked(self):
@@ -281,3 +266,19 @@ class MainWidget(QWidget):
             for i, col in enumerate(SnapshotsTableModel.FIELDS):
                 index = model.createIndex(0, i)
                 model.setData(index, getattr(item, col))
+
+    def load_configuration(self, path: Union[Path, str]):
+        """
+        Loads a configuration file, and sets the path in UI if successful. If
+        the configuration specifies a folder (`folder` key), then it is set in
+        UI. Also calls `MainWidget._enable_operation_widgets`.
+        """
+        self._configuration = Configuration.parse_file(path)
+        self._ui.le_configuration_file.setText(str(path))
+        logging.info(
+            "Loaded configuration file '%s': %s", path, self._configuration
+        )
+        if self._configuration.folder is not None:
+            self._ui.le_folder.setText(str(self._configuration.folder))
+            logging.info("Selected folder %s", self._configuration.folder)
+        self._enable_operation_widgets()

@@ -3,6 +3,7 @@ Configuration file utilities
 """
 __docformat__ = "google"
 
+from typing import Optional
 from pathlib import Path
 
 from pydantic import BaseModel, SecretStr
@@ -28,3 +29,4 @@ class Configuration(BaseModel):
 
     repository: RepositoryConfiguration
     restic: ResticConfiguration
+    folder: Optional[Path] = None
