@@ -1,0 +1,12 @@
+{
+    "repository": {
+        "access_key": "S3 access key",
+        "password": "restic repository password",
+        "url": "url without the leading s3:// or https://",
+        "secret_key": "S3 secret key"
+    },
+    "restic": {
+        "path": "restic"
+    },
+    "folder": "optional default folder path"
+}
